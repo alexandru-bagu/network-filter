@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/network-filter/v16
+/Debug/x64
+/network-filter/.vs/network-filter/v16
+/network-filter/Debug
+/network-filter/Release
+/network-filter/x64
+/Release
+*.user
