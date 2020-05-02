@@ -10,6 +10,13 @@
 #define _LOG 1
 
 // add headers that you want to pre-compile here
-#include "framework.h"
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files
+#include <windows.h>
+#include <WTypesbase.h>
+#include <string>
+typedef std::string STRING;
+#define TO_STRING(T) std::to_string(T)
 
 #endif //PCH_H

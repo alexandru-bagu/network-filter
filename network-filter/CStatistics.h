@@ -3,7 +3,7 @@
 #include <vector>
 
 typedef std::chrono::high_resolution_clock::duration DURATION;
-typedef std::vector<CNanoStatistics*> SAMPLE_VECTOR;
+typedef std::vector<CNanoStatistics> SAMPLE_VECTOR;
 /// Millisecond based statistics with dynamic duration average
 class CStatistics {
 private:

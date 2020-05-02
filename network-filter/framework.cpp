@@ -1,10 +1,11 @@
 #include "pch.h"
-#include "network-filter.h"
+#include "framework.h"
 #include "filter-rules.h"
 #include "lock.h"
-#include "log.h"
+#include "CSocketLog.h"
+#if _LOG
 #include <thread>
-#include <map>
+#endif
 
 SOCKET(WINAPI* TrueAccept)(SOCKET s, struct sockaddr FAR* addr, int FAR* addrlen) = accept;
 int(WINAPI* TrueConnect)(SOCKET s, const struct sockaddr FAR* name, int namelen) = connect;
@@ -18,9 +19,6 @@ int DetourRecv(SOCKET s, char FAR* buf, int len, int flags);
 int DetourSend(SOCKET s, const char FAR* buf, int len, int flags);
 int DetourCloseSocket(SOCKET s);
 
-typedef std::map<SOCKET, CSocket*> SOCKET_MAP;
-typedef SOCKET_MAP::iterator SOCKET_ITERATOR;
-typedef std::thread THREAD;
 
 static SOCKET_MAP _sockets;
 MUTEX _frameworkSyncRoot;
@@ -36,18 +34,17 @@ VOID _background_work(VOID* state) {
 
 		//block the network threads as little as possible
 		//to do that we clone the _sockets map and release the lock
-		SOCKET_MAP* clone;
+		SOCKET_MAP clone;
 		LOCK(_frameworkSyncRoot,
-			clone = new SOCKET_MAP(_sockets);
+			clone = SOCKET_MAP(_sockets);
 		);
 
-		log_open();
-		for (SOCKET_ITERATOR it = clone->begin(); it != clone->end(); it++) {
-			log_stats(it->second);
+		CSocketLog log;
+		log.Open();
+		for (SOCKET_ITERATOR it = clone.begin(); it != clone.end(); it++) {
+			log.Append(it->second);
 		}
-		log_close();
-
-		delete clone;
+		log.Close();
 	}
 }
 #endif
@@ -69,7 +66,7 @@ SOCKET DetourAccept(SOCKET s, struct sockaddr FAR* addr, int FAR* addrlen)
 {
 	SOCKET res = TrueAccept(s, addr, addrlen);
 	CSocket* socket = new CSocket(res);
-	if (endpoint_is_blocked(socket)) {
+	if (remote_endpoint_is_blocked(socket)) {
 		break_connection(socket);
 		return INVALID_SOCKET;
 	}
@@ -85,7 +82,7 @@ int DetourConnect(SOCKET s, const struct sockaddr FAR* name, int FAR namelen)
 	int res = TrueConnect(s, name, namelen);
 	if (res == 0) {
 		CSocket* socket = new CSocket(s);
-		if (endpoint_is_blocked(socket)) {
+		if (remote_endpoint_is_blocked(socket)) {
 			break_connection(socket);
 			return SOCKET_ERROR;
 		}

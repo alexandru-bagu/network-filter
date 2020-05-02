@@ -2,7 +2,7 @@
 #include "filter-rules.h"
 #include "format.h"
 
-BOOL endpoint_is_blocked(CSocket* socket)
+BOOL remote_endpoint_is_blocked(CSocket* socket)
 {
 	return true;
 }

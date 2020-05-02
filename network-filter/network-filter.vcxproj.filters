@@ -30,22 +30,22 @@
     <ClInclude Include="filter-rules.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="export.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="network-filter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CNanoStatistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSocketLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,9 +65,6 @@
     <ClCompile Include="filter-rules.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,6 +72,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="format.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSocketLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

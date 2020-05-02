@@ -1,7 +1,8 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
-#include "network-filter.h"
+#include "framework.h"
 #include "export.h"
+#include "path.h"
 
 
 BOOL APIENTRY DllMain(HMODULE hModule,
@@ -23,6 +24,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	{
 	case DLL_PROCESS_ATTACH:
 		DetourRestoreAfterWith();
+
 
 #if _DEBUG
 		printf("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Starting.\n");
