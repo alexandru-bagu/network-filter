@@ -7,13 +7,9 @@
 std::ofstream* ofs = nullptr;
 MUTEX _logSyncRoot;
 
-const int padding_width = 22;
-
-std::vector<STRING> column_names = { STRING("Id") , STRING("Endpoint"), STRING("Recv KB/s"), STRING("Avg Recv KB/s"), STRING("Send KB/s"), STRING("Avg Send KB/s") };
-std::vector<INT32> column_max_sizes = { 6, 48, 16, 16, 16, 16 };
-
+std::vector<STRING> column_names = { STRING("Id") , STRING("Local"), STRING("Remote"), STRING("Recv KB/s"), STRING("Avg Recv KB/s"), STRING("Send KB/s"), STRING("Avg Send KB/s") };
+std::vector<INT32> column_max_sizes = { 6, 46, 46, 12, 14, 12, 14 };
 const STRING ver_sep = " | ";
-const STRING hor_sep = STRING(padding_width, '-');
 
 STRING& pad(STRING& str, const size_t num, const char paddingChar = ' ')
 {
@@ -49,7 +45,8 @@ VOID log_stats(CSocket* socket)
 {
 	if (ofs != nullptr) {
 		STRING identifier = std::to_string(socket->Identifier());
-		STRING endpoint = socket->Address() + STRING(":") + std::to_string(socket->Port());
+		STRING localEndpoint = socket->LocalEndpoint();
+		STRING remoteEndpoint = socket->RemoteEndpoint();
 		STRING dlSpeed = net_speed_format(socket->CurrentDownloadSpeed());
 		STRING avgDlSpeed = net_speed_format(socket->AverageDownloadSpeed());
 		STRING ulSpeed = net_speed_format(socket->CurrentUploadSpeed());
@@ -59,11 +56,12 @@ VOID log_stats(CSocket* socket)
 			if (ofs != nullptr) {
 				*ofs
 					<< pad(identifier, column_max_sizes[0]) << ver_sep
-					<< pad(endpoint, column_max_sizes[1]) << ver_sep
-					<< pad(dlSpeed, column_max_sizes[2]) << ver_sep
-					<< pad(avgDlSpeed, column_max_sizes[3]) << ver_sep
-					<< pad(ulSpeed, column_max_sizes[4]) << ver_sep
-					<< pad(avgUlSpeed, column_max_sizes[5]) << ver_sep
+					<< pad(localEndpoint, column_max_sizes[1]) << ver_sep
+					<< pad(remoteEndpoint, column_max_sizes[2]) << ver_sep
+					<< pad(dlSpeed, column_max_sizes[3]) << ver_sep
+					<< pad(avgDlSpeed, column_max_sizes[4]) << ver_sep
+					<< pad(ulSpeed, column_max_sizes[5]) << ver_sep
+					<< pad(avgUlSpeed, column_max_sizes[6]) << ver_sep
 					<< std::endl;
 			}
 		)

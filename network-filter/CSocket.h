@@ -1,11 +1,11 @@
 #pragma once
 #include "CStatistics.h"
 #include "lock.h"
+#include "format.h"
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <string>
 
-typedef std::string STRING;
 
 class CSocket
 {
@@ -14,8 +14,7 @@ private:
 	MUTEX _syncRoot;
 	BOOL _alive;
 	SOCKET _socket;
-	STRING _addr;
-	INT32 _port;
+	STRING _localEndpoint, _remoteEndpoint;
 	NANOSECONDS _second;
 	CStatistics* _recvStats, * _sendStats;
 	TIME_POINT _monitoredSince;
@@ -38,8 +37,8 @@ public:
 	/// Returns sent bytes per second in Bs
 	DOUBLE AverageUploadSpeed();
 
-	STRING Address();
-	INT32 Port();
+	STRING LocalEndpoint();
+	STRING RemoteEndpoint();
 	SOCKET Socket();
 	INT64 Identifier();
 };

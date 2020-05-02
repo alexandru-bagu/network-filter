@@ -28,31 +28,49 @@ CSocket::~CSocket()
 	)
 }
 
+STRING computeEndPoint(sockaddr_storage sa_storage)
+{
+	switch (sa_storage.ss_family)
+	{
+	case AF_INET:
+	{
+		CHAR ipv4[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &(((sockaddr_in*)&sa_storage)->sin_addr), ipv4, INET_ADDRSTRLEN);
+		INT32 port = ((sockaddr_in*)&sa_storage)->sin_port;
+		return STRING(ipv4) + STRING(":") + TO_STRING(htons(port));
+		break;
+	}
+	case AF_INET6:
+	{
+		CHAR ipv6[INET6_ADDRSTRLEN];
+		inet_ntop(AF_INET6, &(((sockaddr_in6*)&sa_storage)->sin6_addr), ipv6, INET6_ADDRSTRLEN);
+		INT32 port = ((sockaddr_in6*)&sa_storage)->sin6_port;
+		return STRING(ipv6) + STRING(":") + TO_STRING(htons(port));
+		break;
+	}
+	}
+	return STRING("::0");
+}
+
 VOID CSocket::computeAddress() {
 	sockaddr_storage  sa_storage;
 	INT32 len = sizeof(sockaddr_storage);
 	INT32 result = getsockname(this->_socket, (sockaddr*)&sa_storage, &len);
 
 	if (result == 0) {
-		switch (sa_storage.ss_family)
-		{
-		case AF_INET:
-			CHAR ipv4[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &(((sockaddr_in*)&sa_storage)->sin_addr), ipv4, INET_ADDRSTRLEN);
-			this->_addr = STRING(ipv4);
-			this->_port = ((sockaddr_in*)&sa_storage)->sin_port;
-			break;
-		case AF_INET6:
-			CHAR ipv6[INET6_ADDRSTRLEN];
-			inet_ntop(AF_INET6, &(((sockaddr_in6*)&sa_storage)->sin6_addr), ipv6, INET6_ADDRSTRLEN);
-			this->_addr = STRING(ipv6);
-			this->_port = ((sockaddr_in6*)&sa_storage)->sin6_port;
-			break;
-		}
+		this->_localEndpoint = computeEndPoint(sa_storage);
 	}
 	else {
-		this->_addr = STRING("0.0.0.0");
-		this->_port = 0;
+		this->_localEndpoint = STRING("::0");
+	}
+
+	len = sizeof(sockaddr_storage);
+	result = getpeername(this->_socket, (sockaddr*)&sa_storage, &len);
+	if (result == 0) {
+		this->_remoteEndpoint = computeEndPoint(sa_storage);
+	}
+	else {
+		this->_remoteEndpoint = STRING("::0");
 	}
 }
 
@@ -113,14 +131,14 @@ DOUBLE CSocket::AverageUploadSpeed()
 	)
 }
 
-STRING CSocket::Address()
+STRING CSocket::LocalEndpoint()
 {
-	return this->_addr;
+	return this->_localEndpoint;
 }
 
-INT32 CSocket::Port()
+STRING CSocket::RemoteEndpoint()
 {
-	return this->_port;
+	return this->_remoteEndpoint;
 }
 
 SOCKET CSocket::Socket()
@@ -135,5 +153,5 @@ INT64 CSocket::Identifier()
 
 BOOL CSocket::Reliable()
 {
-	return (std::chrono::duration_cast<SECONDS>(CLOCK::now() - _monitoredSince)).count() > 4;
+	return (std::chrono::duration_cast<SECONDS>(CLOCK::now() - _monitoredSince)).count() > 1;
 }

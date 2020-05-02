@@ -16,7 +16,7 @@ STRING net_speed_format(DOUBLE bytes)
 		 }
 	 }
  }
- STRING result = std::to_string((int)round(bytes * 100));
+ STRING result = TO_STRING((int)round(bytes * 100));
  STRING res;
  if (result.size() < 3) res = "0.00";
  else res = result.insert(result.size() - 2, 1, '.');
