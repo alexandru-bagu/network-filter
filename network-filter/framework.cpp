@@ -35,9 +35,11 @@ VOID _background_work(VOID* state) {
 		//block the network threads as little as possible
 		//to do that we clone the _sockets map and release the lock
 		SOCKET_MAP clone;
-		LOCK(_frameworkSyncRoot,
+		BEGIN_LOCK(_frameworkSyncRoot);
+		{
 			clone = SOCKET_MAP(_sockets);
-		);
+		}
+		END_LOCK(_frameworkSyncRoot);
 
 		CSocketLog log;
 		log.Open();
@@ -71,9 +73,11 @@ SOCKET DetourAccept(SOCKET s, struct sockaddr FAR* addr, int FAR* addrlen)
 		return INVALID_SOCKET;
 	}
 
-	LOCK(_frameworkSyncRoot,
+	BEGIN_LOCK(_frameworkSyncRoot);
+	{
 		register_socket(res);
-	);
+	}
+	END_LOCK(_frameworkSyncRoot);
 	return res;
 }
 
@@ -87,9 +91,11 @@ int DetourConnect(SOCKET s, const struct sockaddr FAR* name, int FAR namelen)
 			return SOCKET_ERROR;
 		}
 
-		LOCK(_frameworkSyncRoot,
+		BEGIN_LOCK(_frameworkSyncRoot);
+		{
 			register_socket(s);
-		);
+		}
+		END_LOCK(_frameworkSyncRoot);
 	}
 	return res;
 }
@@ -99,13 +105,16 @@ int DetourRecv(SOCKET s, char FAR* buf, int len, int flags)
 	int res = TrueRecv(s, buf, len, flags);
 
 	SOCKET_ITERATOR iter;
-	LOCK(_frameworkSyncRoot,
+	BEGIN_LOCK(_frameworkSyncRoot);
+	{
 		iter = _sockets.find(s);
 
-	//in case dll was attached after connections were already active
-	if (iter == _sockets.end()) {
-		iter = register_socket(s);
-	});
+		//in case dll was attached after connections were already active
+		if (iter == _sockets.end()) {
+			iter = register_socket(s);
+		}
+	}
+	END_LOCK(_frameworkSyncRoot);
 
 	iter->second->ProcessReceive(res);
 	if (socket_check_recv_stats(iter->second)) {
@@ -120,13 +129,16 @@ int DetourSend(SOCKET s, const char FAR* buf, int len, int flags)
 	int res = TrueSend(s, buf, len, flags);
 
 	SOCKET_ITERATOR iter;
-	LOCK(_frameworkSyncRoot,
+	BEGIN_LOCK(_frameworkSyncRoot);
+	{
 		iter = _sockets.find(s);
 
-	//in case dll was attached after connections were already active
-	if (iter == _sockets.end()) {
-		iter = register_socket(s);
-	});
+		//in case dll was attached after connections were already active
+		if (iter == _sockets.end()) {
+			iter = register_socket(s);
+		}
+	}
+	END_LOCK(_frameworkSyncRoot);
 
 	iter->second->ProcessSend(res);
 	if (socket_check_send_stats(iter->second)) {
@@ -140,15 +152,18 @@ int DetourCloseSocket(SOCKET s)
 {
 	int res = TrueCloseSocket(s);
 
-	LOCK(_frameworkSyncRoot,
+	BEGIN_LOCK(_frameworkSyncRoot);
+	{
 		auto iter = _sockets.find(s);
-	//just in case `TrueSend` returns after `closesocket` was called
-	//or in case dll was attached after connections were already active
-	//or connection was blocked at start
-	if (iter != _sockets.end()) {
-		delete iter->second;
-		_sockets.erase(iter);
-	});
+		//just in case `TrueSend` returns after `closesocket` was called
+		//or in case dll was attached after connections were already active
+		//or connection was blocked at start
+		if (iter != _sockets.end()) {
+			delete iter->second;
+			_sockets.erase(iter);
+		}
+	}
+	END_LOCK(_frameworkSyncRoot);
 	return res;
 }
 

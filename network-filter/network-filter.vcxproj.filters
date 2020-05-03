@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\rules">
+      <UniqueIdentifier>{c17e1d7f-9847-42bb-adca-3fd2ae52366d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rules">
+      <UniqueIdentifier>{ceb2e1a3-82dd-4ebc-8789-5719658a852d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +54,18 @@
     <ClInclude Include="path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CNetworkFilterRule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CNetworkFilterTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CNewConnectionRule.h">
+      <Filter>Header Files\rules</Filter>
+    </ClInclude>
+    <ClInclude Include="endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -78,6 +96,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CNetworkFilterTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CNetworkFilterRule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CNewConnectionRule.cpp">
+      <Filter>Source Files\rules</Filter>
+    </ClCompile>
+    <ClCompile Include="endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

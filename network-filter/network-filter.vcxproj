@@ -187,23 +187,31 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CNetworkFilterRule.h" />
+    <ClInclude Include="CNetworkFilterTarget.h" />
     <ClInclude Include="CSocket.h" />
     <ClInclude Include="CStatistics.h" />
     <ClInclude Include="CNanoStatistics.h" />
+    <ClInclude Include="endpoint.h" />
     <ClInclude Include="export.h" />
     <ClInclude Include="filter-rules.h" />
     <ClInclude Include="format.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="lock.h" />
     <ClInclude Include="CSocketLog.h" />
+    <ClInclude Include="CNewConnectionRule.h" />
     <ClInclude Include="path.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CNetworkFilterRule.cpp" />
+    <ClCompile Include="CNetworkFilterTarget.cpp" />
+    <ClCompile Include="CNewConnectionRule.cpp" />
     <ClCompile Include="CSocket.cpp" />
     <ClCompile Include="CStatistics.cpp" />
     <ClCompile Include="CNanoStatistics.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="endpoint.cpp" />
     <ClCompile Include="filter-rules.cpp" />
     <ClCompile Include="format.cpp" />
     <ClCompile Include="framework.cpp" />

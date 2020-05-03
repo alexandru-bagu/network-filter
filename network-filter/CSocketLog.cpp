@@ -28,52 +28,58 @@ VOID CSocketLog::line() {
 }
 
 VOID CSocketLog::Open() {
-	LOCK(_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (this->_open) {
 			return;
 		}
-	this->_open = true;
+		this->_open = true;
 
-	this->_file = OUTPUT_FILE(combine({ app_data_path(), get_file_name_without_extension(app_name()) + ".txt" }), TRUNCATE);
-	this->_file.precision(2);
-	for (UINT32 i = 0; i < column_names.size(); i++)
-		this->_file << pad(column_names[i], column_max_sizes[i]) << vertical_separator;
-	this->_file << std::endl;
-	this->line();
-	);
+		this->_file = OUTPUT_FILE(combine({ app_data_path(), get_file_name_without_extension(app_name()) + ".txt" }), TRUNCATE);
+		this->_file.precision(2);
+		for (UINT32 i = 0; i < column_names.size(); i++)
+			this->_file << pad(column_names[i], column_max_sizes[i]) << vertical_separator;
+		this->_file << std::endl;
+		this->line();
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 VOID CSocketLog::Append(CSocket* socket) {
-	LOCK(_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_open) {
 			return;
 		}
 
-	STRING identifier = std::to_string(socket->Identifier());
-	STRING localEndpoint = socket->LocalEndpoint();
-	STRING remoteEndpoint = socket->RemoteEndpoint();
-	STRING dlSpeed = net_speed_format(socket->CurrentDownloadSpeed());
-	STRING avgDlSpeed = net_speed_format(socket->AverageDownloadSpeed());
-	STRING ulSpeed = net_speed_format(socket->CurrentUploadSpeed());
-	STRING avgUlSpeed = net_speed_format(socket->AverageUploadSpeed());
+		STRING identifier = std::to_string(socket->Identifier());
+		STRING localEndpoint = socket->LocalEndpoint();
+		STRING remoteEndpoint = socket->RemoteEndpoint();
+		STRING dlSpeed = net_speed_format(socket->CurrentDownloadSpeed());
+		STRING avgDlSpeed = net_speed_format(socket->AverageDownloadSpeed());
+		STRING ulSpeed = net_speed_format(socket->CurrentUploadSpeed());
+		STRING avgUlSpeed = net_speed_format(socket->AverageUploadSpeed());
 
-	this->_file << pad(identifier, column_max_sizes[0]) << vertical_separator
-		<< pad(localEndpoint, column_max_sizes[1]) << vertical_separator
-		<< pad(remoteEndpoint, column_max_sizes[2]) << vertical_separator
-		<< pad(dlSpeed, column_max_sizes[3]) << vertical_separator
-		<< pad(avgDlSpeed, column_max_sizes[4]) << vertical_separator
-		<< pad(ulSpeed, column_max_sizes[5]) << vertical_separator
-		<< pad(avgUlSpeed, column_max_sizes[6]) << vertical_separator
-		<< std::endl;
-	);
+		this->_file << pad(identifier, column_max_sizes[0]) << vertical_separator
+			<< pad(localEndpoint, column_max_sizes[1]) << vertical_separator
+			<< pad(remoteEndpoint, column_max_sizes[2]) << vertical_separator
+			<< pad(dlSpeed, column_max_sizes[3]) << vertical_separator
+			<< pad(avgDlSpeed, column_max_sizes[4]) << vertical_separator
+			<< pad(ulSpeed, column_max_sizes[5]) << vertical_separator
+			<< pad(avgUlSpeed, column_max_sizes[6]) << vertical_separator
+			<< std::endl;
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 VOID CSocketLog::Close() {
-	LOCK(_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_open) {
 			return;
 		}
-	this->_open = false;
-	this->_file.close();
-	);
+		this->_open = false;
+		this->_file.close();
+	}
+	END_LOCK(this->_syncRoot);
 }

@@ -19,13 +19,15 @@ CSocket::CSocket(SOCKET s)
 
 CSocket::~CSocket()
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return;
 
-	delete this->_recvStats;
-	delete this->_sendStats;
-	this->_alive = false;
-	)
+		delete this->_recvStats;
+		delete this->_sendStats;
+		this->_alive = false;
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 STRING computeEndPoint(sockaddr_storage sa_storage)
@@ -76,59 +78,71 @@ VOID CSocket::computeAddress() {
 
 VOID CSocket::ProcessSend(INT32 bytes)
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return;
 
-	this->_sendStats->Add(bytes);
-	this->_recvStats->Add(0);
-	)
+		this->_sendStats->Add(bytes);
+		this->_recvStats->Add(0);
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 VOID CSocket::ProcessReceive(INT32 bytes)
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return;
 
-	this->_recvStats->Add(bytes);
-	this->_sendStats->Add(0);
-	);
+		this->_recvStats->Add(bytes);
+		this->_sendStats->Add(0);
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 DOUBLE CSocket::CurrentDownloadSpeed()
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return 0;
-	DOUBLE avg = this->_recvStats->ComputeRecent();
-	return avg * this->_second.count();
-	)
+		DOUBLE avg = this->_recvStats->ComputeRecent();
+		return avg * this->_second.count();
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 DOUBLE CSocket::AverageDownloadSpeed()
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return 0;
-	DOUBLE avg = this->_recvStats->Compute();
-	return avg * this->_second.count();
-	)
+		DOUBLE avg = this->_recvStats->Compute();
+		return avg * this->_second.count();
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 DOUBLE CSocket::CurrentUploadSpeed()
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return 0;
 
-	DOUBLE avg = this->_sendStats->ComputeRecent();
-	return avg * this->_second.count();
-	)
+		DOUBLE avg = this->_sendStats->ComputeRecent();
+		return avg * this->_second.count();
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 DOUBLE CSocket::AverageUploadSpeed()
 {
-	LOCK(this->_syncRoot,
+	BEGIN_LOCK(this->_syncRoot);
+	{
 		if (!this->_alive) return 0;
-	DOUBLE avg = this->_sendStats->Compute();
-	return avg * this->_second.count();
-	)
+		DOUBLE avg = this->_sendStats->Compute();
+		return avg * this->_second.count();
+	}
+	END_LOCK(this->_syncRoot);
 }
 
 STRING CSocket::LocalEndpoint()
