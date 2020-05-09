@@ -194,7 +194,7 @@
     <ClInclude Include="CNanoStatistics.h" />
     <ClInclude Include="endpoint.h" />
     <ClInclude Include="export.h" />
-    <ClInclude Include="filter-rules.h" />
+    <ClInclude Include="CNetworkFilter.h" />
     <ClInclude Include="format.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="lock.h" />
@@ -212,7 +212,7 @@
     <ClCompile Include="CNanoStatistics.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="endpoint.cpp" />
-    <ClCompile Include="filter-rules.cpp" />
+    <ClCompile Include="CNetworkFilter.cpp" />
     <ClCompile Include="format.cpp" />
     <ClCompile Include="framework.cpp" />
     <ClCompile Include="CSocketLog.cpp" />
@@ -223,6 +223,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="network-filter.cfg">
+      <DeploymentContent>true</DeploymentContent>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

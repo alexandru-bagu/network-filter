@@ -8,6 +8,8 @@ typedef CLOCK::time_point TIME_POINT;
 typedef std::chrono::nanoseconds NANOSECONDS;
 typedef std::chrono::milliseconds MILLISECONDS;
 typedef std::chrono::seconds SECONDS;
+typedef std::chrono::minutes MINUTES;
+typedef std::chrono::seconds HOURS;
 
 ///Nanosecond statistics
 class CNanoStatistics {

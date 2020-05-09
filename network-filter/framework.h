@@ -7,9 +7,10 @@
 #include <cstdio>
 #include <map>
 
-typedef std::map<SOCKET, CSocket*> SOCKET_MAP;
 typedef std::thread THREAD;
-typedef SOCKET_MAP::iterator SOCKET_ITERATOR;
+
+typedef std::map<SOCKET, CSocket*> SOCKET_MAP;
+typedef SOCKET_MAP::iterator SOCKET_MAP_ITERATOR;
 
 LONG DetourAttach();
 LONG DetourDetach();

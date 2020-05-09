@@ -4,21 +4,21 @@
 #include <shlobj.h>
 #define BUFSIZE 4096
 
-STRING app_full_name() {
+STRING path::app_full_name() {
 	CHAR szPath[MAX_PATH];
 	GetModuleFileNameA(0, szPath, MAX_PATH);
 	return STRING(szPath);
 }
 
-STRING app_path() {
-	return get_directory_name(app_full_name());
+STRING path::app_path() {
+	return directory_name(app_full_name());
 }
 
-STRING app_name() {
-	return get_file_name(app_full_name());
+STRING path::app_name() {
+	return file_name(app_full_name());
 }
 
-STRING app_data_path() {
+STRING path::app_data_path() {
 	CHAR szPath[MAX_PATH];
 	STRING app_data_path;
 	if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, 0, szPath)))
@@ -29,7 +29,7 @@ STRING app_data_path() {
 	return combine(app_data_path, STRING("network-filter"));
 }
 
-STRING absolute_path(STRING relative)
+STRING path::absolute_path(STRING relative)
 {
 	CHAR szPath[BUFSIZE];
 	CHAR** lppPart = { NULL };
@@ -37,14 +37,14 @@ STRING absolute_path(STRING relative)
 	return STRING(szPath);
 }
 
-STRING get_directory_name(STRING path)
+STRING path::directory_name(STRING path)
 {
 	size_t found;
 	found = path.find_last_of("/\\");
 	return path.substr(0, found);
 }
 
-STRING get_file_name(STRING path)
+STRING path::file_name(STRING path)
 {
 	size_t found;
 	found = path.find_last_of("/\\");
@@ -52,26 +52,36 @@ STRING get_file_name(STRING path)
 	return path;
 }
 
-STRING get_file_name_without_extension(STRING path)
+STRING path::file_name_without_extension(STRING path)
 {
-	STRING file_name = get_file_name(path);
+	STRING file_name = path::file_name(path);
 	size_t found;
 	found = path.find_last_of(".");
 	if(found) return path.substr(0, found);
 	return path;
 }
 
-VOID ensure_directory_exists(STRING absolute_path) {
-	STRING dir = get_directory_name(absolute_path);
+VOID path::ensure_directory_exists(STRING absolute_path) {
+	STRING dir = directory_name(absolute_path);
 	SHCreateDirectoryExA(NULL, dir.c_str(), NULL);
 }
 
-STRING combine(STRING path1, STRING path2) {
+STRING path::combine(STRING path1, STRING path2) {
 	std::vector<STRING> paths = { path1, path2 };
 	return combine(paths);
 }
 
-STRING combine(std::vector<STRING> paths)
+STRING path::combine(STRING path1, STRING path2, STRING path3) {
+	std::vector<STRING> paths = { path1, path2, path3 };
+	return combine(paths);
+}
+
+STRING path::combine(STRING path1, STRING path2, STRING path3, STRING path4) {
+	std::vector<STRING> paths = { path1, path2, path3, path4 };
+	return combine(paths);
+}
+
+STRING path::combine(STRING_VECTOR paths)
 {
 	if (paths.size() == 0) {
 		return STRING("");

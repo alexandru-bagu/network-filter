@@ -4,6 +4,7 @@
 #include "export.h"
 #include "path.h"
 
+#define DBG_ATTACH 1
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -31,6 +32,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		fflush(stdout);
 #endif
 
+#if DBG_ATTACH
+		printf("Attach debugger then press any key...");
+		fflush(stdout);
+		{ char any; scanf_s("%c", &any, 1); }
+#endif
 		error = DetourAttach();
 
 		if (error == NO_ERROR) {

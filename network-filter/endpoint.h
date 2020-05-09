@@ -1,4 +1,5 @@
 #pragma once
 #include "pch.h"
 
-std::pair<STRING, STRING> endpoint_parse(STRING endpoint);
+typedef std::pair<STRING, STRING> ENDPOINT;
+ENDPOINT endpoint_parse(STRING endpoint);

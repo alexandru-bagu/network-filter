@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "framework.h"
-#include "filter-rules.h"
 #include "lock.h"
+#include "path.h"
+
+#include "CNetworkFilter.h"
 #include "CSocketLog.h"
 #if _LOG
 #include <thread>
@@ -21,6 +23,7 @@ int DetourCloseSocket(SOCKET s);
 
 
 static SOCKET_MAP _sockets;
+static CNetworkFilter _filters;
 MUTEX _frameworkSyncRoot;
 
 #if _LOG
@@ -31,9 +34,9 @@ THREAD* _background_thread;
 VOID _background_work(VOID* state) {
 	while (_thread_running) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-
 		//block the network threads as little as possible
 		//to do that we clone the _sockets map and release the lock
+
 		SOCKET_MAP clone;
 		BEGIN_LOCK(_frameworkSyncRoot);
 		{
@@ -43,7 +46,7 @@ VOID _background_work(VOID* state) {
 
 		CSocketLog log;
 		log.Open();
-		for (SOCKET_ITERATOR it = clone.begin(); it != clone.end(); it++) {
+		for (SOCKET_MAP_ITERATOR it = clone.begin(); it != clone.end(); it++) {
 			log.Append(it->second);
 		}
 		log.Close();
@@ -54,13 +57,15 @@ VOID _background_work(VOID* state) {
 VOID break_connection(CSocket* socket)
 {
 	closesocket(socket->Identifier());
+	_filters.Unregister(socket);
 }
 
 ///Must be called from a synchronized block
-SOCKET_ITERATOR register_socket(SOCKET s) {
-	SOCKET_ITERATOR iter;
+SOCKET_MAP_ITERATOR register_socket(SOCKET s) {
+	SOCKET_MAP_ITERATOR iter;
 	CSocket* socket = new CSocket(s);
 	_sockets.insert(std::make_pair(s, socket));
+	_filters.Register(socket);
 	return _sockets.find(s);
 }
 
@@ -68,7 +73,8 @@ SOCKET DetourAccept(SOCKET s, struct sockaddr FAR* addr, int FAR* addrlen)
 {
 	SOCKET res = TrueAccept(s, addr, addrlen);
 	CSocket* socket = new CSocket(res);
-	if (remote_endpoint_is_blocked(socket)) {
+	
+	if (_filters.Filter(socket)) {
 		break_connection(socket);
 		return INVALID_SOCKET;
 	}
@@ -86,7 +92,7 @@ int DetourConnect(SOCKET s, const struct sockaddr FAR* name, int FAR namelen)
 	int res = TrueConnect(s, name, namelen);
 	if (res == 0) {
 		CSocket* socket = new CSocket(s);
-		if (remote_endpoint_is_blocked(socket)) {
+		if (_filters.Filter(socket)) {
 			break_connection(socket);
 			return SOCKET_ERROR;
 		}
@@ -104,7 +110,7 @@ int DetourRecv(SOCKET s, char FAR* buf, int len, int flags)
 {
 	int res = TrueRecv(s, buf, len, flags);
 
-	SOCKET_ITERATOR iter;
+	SOCKET_MAP_ITERATOR iter;
 	BEGIN_LOCK(_frameworkSyncRoot);
 	{
 		iter = _sockets.find(s);
@@ -117,7 +123,8 @@ int DetourRecv(SOCKET s, char FAR* buf, int len, int flags)
 	END_LOCK(_frameworkSyncRoot);
 
 	iter->second->ProcessReceive(res);
-	if (socket_check_recv_stats(iter->second)) {
+
+	if (_filters.Filter(iter->second)) {
 		break_connection(iter->second);
 		return 0;
 	}
@@ -128,7 +135,7 @@ int DetourSend(SOCKET s, const char FAR* buf, int len, int flags)
 {
 	int res = TrueSend(s, buf, len, flags);
 
-	SOCKET_ITERATOR iter;
+	SOCKET_MAP_ITERATOR iter;
 	BEGIN_LOCK(_frameworkSyncRoot);
 	{
 		iter = _sockets.find(s);
@@ -141,7 +148,7 @@ int DetourSend(SOCKET s, const char FAR* buf, int len, int flags)
 	END_LOCK(_frameworkSyncRoot);
 
 	iter->second->ProcessSend(res);
-	if (socket_check_send_stats(iter->second)) {
+	if (_filters.Filter(iter->second)) {
 		break_connection(iter->second);
 		return 0;
 	}
@@ -169,6 +176,8 @@ int DetourCloseSocket(SOCKET s)
 
 LONG DetourAttach()
 {
+	_filters.Parse(path::combine(path::app_path(), "network-filter.cfg"));
+
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 	DetourAttach(&(PVOID&)TrueAccept, DetourAccept);

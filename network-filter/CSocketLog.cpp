@@ -35,7 +35,7 @@ VOID CSocketLog::Open() {
 		}
 		this->_open = true;
 
-		this->_file = OUTPUT_FILE(combine({ app_data_path(), get_file_name_without_extension(app_name()) + ".txt" }), TRUNCATE);
+		this->_file = OUTPUT_FILE(path::combine(path::app_data_path(), path::file_name_without_extension(path::app_name()) + ".txt"), TRUNCATE);
 		this->_file.precision(2);
 		for (UINT32 i = 0; i < column_names.size(); i++)
 			this->_file << pad(column_names[i], column_max_sizes[i]) << vertical_separator;

@@ -5,7 +5,7 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <string>
-
+#include <vector>
 
 class CSocket
 {
@@ -42,3 +42,6 @@ public:
 	SOCKET Socket();
 	INT64 Identifier();
 };
+
+typedef std::vector<CSocket*> SOCKET_VECTOR;
+typedef SOCKET_VECTOR::iterator SOCKET_VECTOR_ITERATOR;

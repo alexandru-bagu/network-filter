@@ -3,20 +3,20 @@
 
 CNetworkFilterRule::CNetworkFilterRule()
 {
-
+	this->_syncRoot = new MUTEX;
 }
 
-MUTEX& CNetworkFilterRule::SyncRoot()
+MUTEX* CNetworkFilterRule::SyncRoot()
 {
-	return _syncRoot;
+	return this->_syncRoot;
 }
 
-SOCKET_ITERATOR CNetworkFilterRule::Begin()
+SOCKET_VECTOR_ITERATOR CNetworkFilterRule::Begin()
 {
 	return _sockets.begin();
 }
 
-SOCKET_ITERATOR CNetworkFilterRule::End()
+SOCKET_VECTOR_ITERATOR CNetworkFilterRule::End()
 {
 	return _sockets.end();
 }
@@ -28,40 +28,44 @@ BOOL CNetworkFilterRule::Match(CSocket* socket) {
 
 BOOL CNetworkFilterRule::Register(CSocket* socket)
 {
-	if (this->Match(socket)) 
+	if (this->Match(socket) && !this->Filter(socket))
 	{
-		BEGIN_LOCK(SyncRoot());
+		BEGIN_LOCK_PTR(SyncRoot());
 		{
-			SOCKET_ITERATOR it = std::find(Begin(), End(), socket);
+			SOCKET_VECTOR_ITERATOR it = std::find(Begin(), End(), socket);
 			if (it == End()) {
 				this->_sockets.push_back(socket);
-				return true;
+				return TRUE;
 			}
-			return false;
 		}
 		END_LOCK(SyncRoot());
 	}
-	return false;
+	return FALSE;
 }
 
-BOOL CNetworkFilterRule::Remove(CSocket* socket)
+BOOL CNetworkFilterRule::Unregister(CSocket* socket)
 {
-	if (this->Match(socket)) 
+	if (this->Match(socket))
 	{
-		BEGIN_LOCK(SyncRoot());
+		BEGIN_LOCK_PTR(SyncRoot());
 		{
-			SOCKET_ITERATOR it = std::find(Begin(), End(), socket);
+			SOCKET_VECTOR_ITERATOR it = std::find(Begin(), End(), socket);
 			if (it != End()) {
 				this->_sockets.erase(it);
-				return true;
+				return TRUE;
 			}
-			return false;
 		}
 		END_LOCK(SyncRoot());
 	}
-	return false;
+	return FALSE;
 }
 
-VOID CNetworkFilterRule::Tick() {
+BOOL CNetworkFilterRule::Parse(STRING_STREAM& stream)
+{
+	return FALSE;
+}
 
+BOOL CNetworkFilterRule::Filter(CSocket*)
+{
+	return TRUE;
 }

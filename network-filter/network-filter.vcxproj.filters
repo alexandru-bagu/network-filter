@@ -33,9 +33,6 @@
     <ClInclude Include="CStatistics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="filter-rules.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="lock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
     <ClInclude Include="CSocketLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CNetworkFilterRule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -64,6 +58,12 @@
       <Filter>Header Files\rules</Filter>
     </ClInclude>
     <ClInclude Include="endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CNetworkFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,9 +80,6 @@
     <ClCompile Include="CStatistics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filter-rules.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="framework.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,9 +90,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CSocketLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CNetworkFilterTarget.cpp">
@@ -110,5 +104,14 @@
     <ClCompile Include="endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CNetworkFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="network-filter.cfg" />
   </ItemGroup>
 </Project>
