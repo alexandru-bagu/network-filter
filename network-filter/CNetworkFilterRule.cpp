@@ -3,7 +3,7 @@
 
 CNetworkFilterRule::CNetworkFilterRule()
 {
-	this->_syncRoot = new MUTEX;
+	this->_syncRoot = new MUTEX();
 }
 
 MUTEX* CNetworkFilterRule::SyncRoot()

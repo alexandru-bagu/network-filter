@@ -187,8 +187,11 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CMaxConnectionsRule.h" />
+    <ClInclude Include="CMaxSendRule.h" />
     <ClInclude Include="CNetworkFilterRule.h" />
     <ClInclude Include="CNetworkFilterTarget.h" />
+    <ClInclude Include="CMaxRecvRule.h" />
     <ClInclude Include="CSocket.h" />
     <ClInclude Include="CStatistics.h" />
     <ClInclude Include="CNanoStatistics.h" />
@@ -204,6 +207,9 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CMaxConnectionsRule.cpp" />
+    <ClCompile Include="CMaxRecvRule.cpp" />
+    <ClCompile Include="CMaxSendRule.cpp" />
     <ClCompile Include="CNetworkFilterRule.cpp" />
     <ClCompile Include="CNetworkFilterTarget.cpp" />
     <ClCompile Include="CNewConnectionRule.cpp" />

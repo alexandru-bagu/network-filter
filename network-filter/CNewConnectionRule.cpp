@@ -9,19 +9,29 @@ CNewConnectionRule::CNewConnectionRule() {
 
 BOOL CNewConnectionRule::Register(CSocket* socket) {
 	if (this->Match(socket)) {
+		auto ep = endpoint_parse(socket->RemoteEndpoint());
+
 		BEGIN_LOCK_PTR(SyncRoot());
 		{
-			auto ep = endpoint_parse(socket->RemoteEndpoint());
-			ENDPOINT_ITERATOR it = this->_endpoints.find(ep.first);
+			ncr::ENDPOINT_ITERATOR it = this->_endpoints.find(ep.first);
 			if (it == this->_endpoints.end()) {
-				CStatistics stat(_perAcceptDuration * 2, 2);
+				CStatistics stat(_perAcceptDuration * 2, 2, 0.5f);
 				this->_endpoints.insert(std::make_pair(ep.first, stat));
+				it = this->_endpoints.find(ep.first);
 			}
-			it->second.Add(1);
-
-			return CNetworkFilterRule::Register(socket);
 		}
 		END_LOCK(SyncRoot());
+
+		if (CNetworkFilterRule::Register(socket)) {
+			BEGIN_LOCK_PTR(SyncRoot());
+			{
+				ncr::ENDPOINT_ITERATOR it = this->_endpoints.find(ep.first);
+				if (it != this->_endpoints.end()) {
+					it->second.Add(1);
+				}
+			}
+			END_LOCK(SyncRoot());
+		}
 	}
 	return FALSE;
 }
@@ -29,8 +39,8 @@ BOOL CNewConnectionRule::Register(CSocket* socket) {
 BOOL CNewConnectionRule::Parse(STRING_STREAM& stream) {
 	STRING str;
 	CHAR chr;
-	stream >> str; this->_local = endpoint_parse(str);
-	stream >> str; this->_remote = endpoint_parse(str);
+	stream >> str; this->_source.Parse(str);
+	stream >> str; this->_target.Parse(str);
 	stream >> this->_amount;
 	stream >> chr; // read '/'
 	UINT64 time;
@@ -59,10 +69,13 @@ BOOL CNewConnectionRule::Filter(CSocket* socket) {
 	BEGIN_LOCK_PTR(SyncRoot());
 	{
 		auto ep = endpoint_parse(socket->RemoteEndpoint());
-		ENDPOINT_ITERATOR it = this->_endpoints.find(ep.first);
+		ncr::ENDPOINT_ITERATOR it = this->_endpoints.find(ep.first);
 		if (it != this->_endpoints.end()) {
-			it->second.Add(1);
+			if (it->second.ComputeRecent() >= this->_amount) {
+				return TRUE;
+			}
 		}
 	}
 	END_LOCK(SyncRoot());
+	return FALSE;
 }

@@ -1,16 +1,15 @@
 #include "pch.h"
 #include "CNetworkFilter.h"
 #include "format.h"
+
 #include "CNewConnectionRule.h"
+#include "CMaxConnectionsRule.h"
+#include "CMaxRecvRule.h"
+#include "CMaxSendRule.h"
 
 #include <fstream>
 #include <sstream>
 
-
-//new-connection *:5816 *:* 2/1s
-//max-connections *:5816 *:* 10
-//max-recv-avg *:5816 *:* 50KB/1s
-//max-send-avg *:5816 *:* 50KB/1s
 
 CNetworkFilter::CNetworkFilter() {
 
@@ -29,11 +28,12 @@ VOID CNetworkFilter::Parse(STRING configurationFile) {
 		stream >> filterType;
 
 		CNetworkFilterRule* rule = nullptr;
-		if (filterType == "new-connection") {
-			rule = new CNewConnectionRule();
-		} else {
-			rule = new CNetworkFilterRule();
-		}
+		if (filterType == "new-connection") { rule = new CNewConnectionRule(); }
+		else if (filterType == "max-connections") { rule = new CMaxConnectionsRule(); }
+		else if (filterType == "max-recv-avg") { rule = new CMaxRecvRule(); }
+		else if (filterType == "max-send-avg") { rule = new CMaxSendRule(); }
+		else { rule = new CNetworkFilterRule(); }
+
 		if (rule->Parse(stream)) {
 			vector.push_back(rule);
 		}

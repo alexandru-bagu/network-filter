@@ -66,6 +66,15 @@
     <ClInclude Include="path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CMaxConnectionsRule.h">
+      <Filter>Header Files\rules</Filter>
+    </ClInclude>
+    <ClInclude Include="CMaxRecvRule.h">
+      <Filter>Header Files\rules</Filter>
+    </ClInclude>
+    <ClInclude Include="CMaxSendRule.h">
+      <Filter>Header Files\rules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -109,6 +118,15 @@
     </ClCompile>
     <ClCompile Include="path.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMaxConnectionsRule.cpp">
+      <Filter>Source Files\rules</Filter>
+    </ClCompile>
+    <ClCompile Include="CMaxRecvRule.cpp">
+      <Filter>Source Files\rules</Filter>
+    </ClCompile>
+    <ClCompile Include="CMaxSendRule.cpp">
+      <Filter>Source Files\rules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

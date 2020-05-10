@@ -11,8 +11,9 @@
 typedef std::istringstream STRING_STREAM;
 
 class CNetworkFilterRule {
-private:
+protected:
 	CNetworkFilterTarget _source, _target;
+private:
 	MUTEX* _syncRoot;
 	SOCKET_VECTOR _sockets;
 protected:

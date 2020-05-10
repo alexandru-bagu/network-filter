@@ -2,19 +2,19 @@
 #include "CNetworkFilterRule.h"
 #include "endpoint.h"
 
-namespace ncr {
-	typedef std::map<STRING, CStatistics> ENDPOINT_MAP;
+namespace mcr {
+	typedef std::map<STRING, INT32*> ENDPOINT_MAP;
 	typedef ENDPOINT_MAP::iterator ENDPOINT_ITERATOR;
 }
 
-class CNewConnectionRule : public CNetworkFilterRule {
+class CMaxConnectionsRule : public CNetworkFilterRule {
 private:
 	INT32 _amount;
-	DURATION  _perAcceptDuration;
-	ncr::ENDPOINT_MAP _endpoints;
+	mcr::ENDPOINT_MAP _endpoints;
 public:
-	CNewConnectionRule();
+	CMaxConnectionsRule();
 	BOOL Register(CSocket* socket) override;
+	BOOL Unregister(CSocket* socket) override;
 	BOOL Parse(STRING_STREAM& stream) override;
 	BOOL Filter(CSocket*) override;
 };
