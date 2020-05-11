@@ -7,6 +7,7 @@ CMaxConnectionsRule::CMaxConnectionsRule() {
 }
 
 BOOL CMaxConnectionsRule::Register(CSocket* socket) {
+	LOG->Debug(string_format("Begin CMaxConnectionsRule::Register called for %s", socket->RemoteEndpoint().c_str()));
 	if (this->Match(socket)) {
 		auto ep = endpoint_parse(socket->RemoteEndpoint());
 		BEGIN_LOCK_PTR(SyncRoot());
@@ -32,10 +33,12 @@ BOOL CMaxConnectionsRule::Register(CSocket* socket) {
 			END_LOCK(SyncRoot());
 		}
 	}
+	LOG->Debug(string_format("End CMaxConnectionsRule::Register called for %s", socket->RemoteEndpoint().c_str()));
 	return FALSE;
 }
 
 BOOL CMaxConnectionsRule::Unregister(CSocket* socket) {
+	LOG->Debug(string_format("Begin CMaxConnectionsRule::Unregister called for %s", socket->RemoteEndpoint().c_str()));
 	BEGIN_LOCK_PTR(SyncRoot());
 	{
 		auto ep = endpoint_parse(socket->RemoteEndpoint());
@@ -50,6 +53,7 @@ BOOL CMaxConnectionsRule::Unregister(CSocket* socket) {
 		}
 	}
 	END_LOCK(SyncRoot());
+	LOG->Debug(string_format("End CMaxConnectionsRule::Unregister called for %s", socket->RemoteEndpoint().c_str()));
 	return CNetworkFilterRule::Unregister(socket);
 }
 

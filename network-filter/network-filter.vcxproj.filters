@@ -75,6 +75,12 @@
     <ClInclude Include="CMaxSendRule.h">
       <Filter>Header Files\rules</Filter>
     </ClInclude>
+    <ClInclude Include="CFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -127,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="CMaxSendRule.cpp">
       <Filter>Source Files\rules</Filter>
+    </ClCompile>
+    <ClCompile Include="CFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CLog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

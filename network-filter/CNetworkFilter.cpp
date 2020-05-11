@@ -35,6 +35,7 @@ VOID CNetworkFilter::Parse(STRING configurationFile) {
 		else { rule = new CNetworkFilterRule(); }
 
 		if (rule->Parse(stream)) {
+			LOG->Debug(string_format("Parsed config line successfully: %s", line.c_str()));
 			vector.push_back(rule);
 		}
 		else {
@@ -45,6 +46,7 @@ VOID CNetworkFilter::Parse(STRING configurationFile) {
 }
 
 BOOL CNetworkFilter::Register(CSocket* socket) {
+	LOG->Debug(string_format("Begin CNetworkFilter::Register called for %s", socket->RemoteEndpoint().c_str()));
 	RULE_VECTOR& vector = this->_rules;
 	BOOL filtered = false;
 	for (RULE_ITERATOR it = vector.begin(); it != vector.end(); it++) {
@@ -54,16 +56,18 @@ BOOL CNetworkFilter::Register(CSocket* socket) {
 		for (RULE_ITERATOR it = vector.begin(); it != vector.end(); it++) {
 			(*it)->Register(socket);
 		}
-		return TRUE;
 	}
-	return FALSE;
+	LOG->Debug(string_format("End CNetworkFilter::Register called for %s", socket->RemoteEndpoint().c_str()));
+	return !filtered;
 }
 
 VOID CNetworkFilter::Unregister(CSocket* socket) {
+	LOG->Debug(string_format("Begin CNetworkFilter::Unregister called for %s", socket->RemoteEndpoint().c_str()));
 	RULE_VECTOR& vector = this->_rules;
 	for (RULE_ITERATOR it = vector.begin(); it != vector.end(); it++) {
 		(*it)->Unregister(socket);
 	}
+	LOG->Debug(string_format("End CNetworkFilter::Unregister called for %s", socket->RemoteEndpoint().c_str()));
 }
 
 BOOL CNetworkFilter::Filter(CSocket* socket) {

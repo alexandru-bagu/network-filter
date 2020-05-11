@@ -9,6 +9,7 @@ CNewConnectionRule::CNewConnectionRule() {
 
 BOOL CNewConnectionRule::Register(CSocket* socket) {
 	if (this->Match(socket)) {
+		LOG->Debug(string_format("Begin CNewConnectionRule::Register called for %s", socket->RemoteEndpoint().c_str()));
 		auto ep = endpoint_parse(socket->RemoteEndpoint());
 
 		BEGIN_LOCK_PTR(SyncRoot());
@@ -32,6 +33,7 @@ BOOL CNewConnectionRule::Register(CSocket* socket) {
 			}
 			END_LOCK(SyncRoot());
 		}
+		LOG->Debug(string_format("End CNewConnectionRule::Register called for %s", socket->RemoteEndpoint().c_str()));
 	}
 	return FALSE;
 }

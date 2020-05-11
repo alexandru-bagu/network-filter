@@ -75,24 +75,28 @@
     <IncludePath>..\dependency\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\dependency\lib.X86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\dependency\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\dependency\lib.X64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\dependency\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\dependency\lib.X86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName)32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\dependency\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\dependency\lib.X64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -187,6 +191,8 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CFile.h" />
+    <ClInclude Include="CLog.h" />
     <ClInclude Include="CMaxConnectionsRule.h" />
     <ClInclude Include="CMaxSendRule.h" />
     <ClInclude Include="CNetworkFilterRule.h" />
@@ -207,6 +213,8 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CFile.cpp" />
+    <ClCompile Include="CLog.cpp" />
     <ClCompile Include="CMaxConnectionsRule.cpp" />
     <ClCompile Include="CMaxRecvRule.cpp" />
     <ClCompile Include="CMaxSendRule.cpp" />

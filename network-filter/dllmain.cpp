@@ -4,7 +4,8 @@
 #include "export.h"
 #include "path.h"
 
-#define DBG_ATTACH 0
+CLog* LOG;
+#define DBG_ATTACH 1
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -24,11 +25,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
+		LOG = new CLog();
 		DetourRestoreAfterWith();
 
 
 #if _DEBUG
-		printf("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Starting.\n");
+		LOG->Trace("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Starting.");
 		fflush(stdout);
 #endif
 
@@ -41,7 +43,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		if (error == NO_ERROR) {
 #if _DEBUG
-			printf("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Detoured accept, recv, send, closesocket.\n");
+			LOG->Trace("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Detoured accept, recv, send, closesocket.");
 #endif
 #if _LOG
 			DetourStartBackground();
@@ -49,7 +51,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		}
 		else {
 #if _DEBUG
-			printf("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Error detouring accept & recv & send: %d\n", error);
+			LOG->Trace(string_format("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Error detouring accept & recv & send: %d", error));
 #endif
 		}
 	case DLL_PROCESS_DETACH:
@@ -60,7 +62,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 #endif 
 #if _DEBUG
 
-			printf("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Removed accept, recv, send, closesocket (result=%d).\n", error);
+			LOG->Trace(string_format("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Removed accept, recv, send, closesocket (result=%d).", error));
 			fflush(stdout);
 #endif
 		}

@@ -58,12 +58,14 @@ VOID break_connection(CSocket* socket)
 {
 	closesocket(socket->Identifier());
 	_filters.Unregister(socket);
+	LOG->Debug(string_format("removed socket with remote endpoint: %s", socket->RemoteEndpoint().c_str()));
 }
 
 ///Must be called from a synchronized block
 SOCKET_MAP_ITERATOR register_socket(SOCKET s) {
 	SOCKET_MAP_ITERATOR iter;
 	CSocket* socket = new CSocket(s);
+	LOG->Debug(string_format("registering new socket with remote endpoint: %s", socket->RemoteEndpoint().c_str()));
 	_sockets.insert(std::make_pair(s, socket));
 	_filters.Register(socket);
 	return _sockets.find(s);
