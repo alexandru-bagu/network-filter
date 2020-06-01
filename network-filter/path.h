@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.h"
 #include <vector>
 typedef std::vector<STRING> STRING_VECTOR;
 
@@ -16,5 +15,7 @@ namespace path {
 	STRING combine(STRING path1, STRING path2, STRING path3);
 	STRING combine(STRING path1, STRING path2, STRING path3, STRING path4);
 	STRING combine(STRING_VECTOR paths);
+	BOOL file_exists(STRING absolute_path);
+	BOOL directory_exists(STRING absolute_path);
 	VOID ensure_directory_exists(STRING absolute_path);
 }

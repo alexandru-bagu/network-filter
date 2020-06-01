@@ -23,7 +23,7 @@ VOID CLog::Append(STRING type, STRING text) {
 }
 
 VOID CLog::Debug(STRING text) {
-#if _DEBUG
+#if 1
 	this->Append("DEBUG", text);
 #endif
 }

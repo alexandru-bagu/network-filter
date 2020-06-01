@@ -48,7 +48,7 @@ STRING path::file_name(STRING path)
 {
 	size_t found;
 	found = path.find_last_of("/\\");
-	if(found) return path.substr(found + 1);
+	if (found) return path.substr(found + 1);
 	return path;
 }
 
@@ -57,13 +57,43 @@ STRING path::file_name_without_extension(STRING path)
 	STRING file_name = path::file_name(path);
 	size_t found;
 	found = path.find_last_of(".");
-	if(found) return path.substr(0, found);
+	if (found) return path.substr(0, found);
 	return path;
 }
 
+BOOL path::file_exists(STRING directory)
+{
+	DWORD ftyp = GetFileAttributesA(directory.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+
+	if (!(ftyp & FILE_ATTRIBUTE_DIRECTORY))
+		return true;   // this is not a directory!
+
+	return false;    // this is a directory!
+}
+
+BOOL path::directory_exists(STRING directory)
+{
+	DWORD ftyp = GetFileAttributesA(directory.c_str());
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!
+
+	return false;    // this is not a directory!
+}
+
 VOID path::ensure_directory_exists(STRING absolute_path) {
-	STRING dir = directory_name(absolute_path);
-	SHCreateDirectoryExA(NULL, dir.c_str(), NULL);
+	if (!path::directory_exists(absolute_path)) {
+		SECURITY_ATTRIBUTES saPermissions;
+
+		saPermissions.nLength = sizeof(SECURITY_ATTRIBUTES);
+		saPermissions.lpSecurityDescriptor = NULL;
+		saPermissions.bInheritHandle = TRUE;
+		CreateDirectoryA(absolute_path.c_str(), &saPermissions);
+	}
 }
 
 STRING path::combine(STRING path1, STRING path2) {
@@ -88,7 +118,7 @@ STRING path::combine(STRING_VECTOR paths)
 	}
 	CHAR szPath1[BUFSIZE], szPath2[BUFSIZE];
 	strcpy_s(szPath1, paths[0].c_str());
-	for (INT32 i = 1; i < paths.size(); i++) {
+	for (UINT32 i = 1; i < paths.size(); i++) {
 		PathCombineA(szPath2, szPath1, paths[i].c_str());
 		strcpy_s(szPath1, szPath2);
 	}

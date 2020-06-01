@@ -3,9 +3,10 @@
 #include "framework.h"
 #include "export.h"
 #include "path.h"
+#include <fstream>
 
-CLog* LOG;
-#define DBG_ATTACH 1
+CLog* LOG = nullptr;
+#define DBG_ATTACH 0
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -13,6 +14,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 )
 {
 	entrypoint();
+
+	path::ensure_directory_exists(path::app_data_path());
+	if (LOG == nullptr) {
+		LOG = new CLog();
+	}
 
 	LONG error;
 	(void)hModule;
@@ -25,14 +31,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		LOG = new CLog();
 		DetourRestoreAfterWith();
 
-
-#if _DEBUG
 		LOG->Trace("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Starting.");
-		fflush(stdout);
-#endif
 
 #if _DEBUG && DBG_ATTACH
 		printf("Attach debugger then press any key...");
@@ -42,17 +43,13 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		error = DetourAttach();
 
 		if (error == NO_ERROR) {
-#if _DEBUG
 			LOG->Trace("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Detoured accept, recv, send, closesocket.");
-#endif
 #if _LOG
 			DetourStartBackground();
 #endif
 		}
 		else {
-#if _DEBUG
 			LOG->Trace(string_format("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Error detouring accept & recv & send: %d", error));
-#endif
 		}
 	case DLL_PROCESS_DETACH:
 		if (false) { //ignore exit. if process really exits then we don't really care then, do we?
@@ -60,11 +57,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 #if _LOG
 			DetourStopBackground();
 #endif 
-#if _DEBUG
-
 			LOG->Trace(string_format("network-filter" DETOURS_STRINGIFY(DETOURS_BITS) ".dll:" " Removed accept, recv, send, closesocket (result=%d).", error));
-			fflush(stdout);
-#endif
 		}
 		break;
 	case DLL_THREAD_ATTACH:
